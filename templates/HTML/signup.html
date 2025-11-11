@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>회원가입</h1>
+
+<form method="post">
+    {% csrf_token %}
+    ID: <input type="text" name="username"><br>
+    PW: <input type="password" name="password"><br>
+    <button type="submit">가입</button>
+</form>
+
+{% if error %}
+<p style="color:red">{{ error }}</p>
+{% endif %}
+</body>
+</html>
