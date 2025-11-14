@@ -31,6 +31,7 @@ def main(request):
 # 퀴즈 카테고리
 def quiz_category_list(request):
     selected = request.GET.get("cat", "전체")
+    categories = QuizCategory.objects.all()
 
     return render(request, "HTML/quiz_category_list.html", {
         "categories": categories,

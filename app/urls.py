@@ -24,8 +24,9 @@ urlpatterns = [
     path('login/', views.login_view, name="login"),
     path('check-username/', views.check_username, name='check_username'),  
     path('logout/', views.logout_view, name='logout'), 
-    path("quiz/", views.quiz_category_list, name="quiz"),
-    path('quiz/<int:categor_id>/', views.quiz_view, name='quiz_category'),
+    path("quiz/", views.quiz_category_list, name="quiz_category_list"),
+    path("quiz/<int:category_id>/", views.quiz_view, name="quiz_view"),
+    path("quiz/<int:category_id>/submit/", views.quiz_submit, name="quiz_submit"),
     path("point/", views.point, name="point"),
     path("user/", views.user_info, name="user_info"),
 ]

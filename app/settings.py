@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'users',
         'USER': 'root',
         'PASSWORD': '@Dhtmdrms0213',
-        'HOST': '192.168.10.12',   # ✅ DB 서버 IP
+        'HOST': '172.16.6.131',   # ✅ DB 서버 IP
         'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4',
