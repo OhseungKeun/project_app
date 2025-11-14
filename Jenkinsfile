@@ -14,7 +14,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/OhseungKeun/argocd.git',
+                        url: 'https://github.com/OhseungKeun/project_app.git',
                         credentialsId: 'Github-Token'
                     ]]
                 ])
