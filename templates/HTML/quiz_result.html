@@ -1,22 +1,24 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>모의고사 결과</title>
-</head>
-<body>
-    {% if message %}
-        <p style="color: red;">{{ message }}</p>
+{% extends "HTML/base.html" %}
+
+{% block title %}모의고사 결과{% endblock %}
+
+{% block content %}
+
+{% if message %}
+    <p style="color: red;">{{ message }}</p>
+{% else %}
+    <h2>{{ category.name }} 모의고사 결과</h2>
+    <p>총점: {{ score }} / {{ total }}</p>
+
+    {% if passed %}
+        <p style="color: green;">🎉 합격! {{ reward }}포인트가 지급되었습니다.</p>
     {% else %}
-        <h2>{{ category.name }} 모의고사 결과</h2>
-        <p>총점: {{ score }} / {{ total }}</p>
-        {% if passed %}
-            <p style="color: green;">🎉 합격! {{ reward }}포인트가 지급되었습니다.</p>
-        {% else %}
-            <p style="color: red;">❌ 불합격. 다음에 다시 도전하세요!</p>
-        {% endif %}
-        <p>현재 보유 포인트: {{ balance }}P</p>
+        <p style="color: red;">❌ 불합격. 다음에 다시 도전하세요!</p>
     {% endif %}
-    <a href="/">홈으로 돌아가기</a>
-</body>
-</html>
+
+    <p>현재 보유 포인트: {{ balance }}P</p>
+{% endif %}
+
+<a href="/">홈으로 돌아가기</a>
+
+{% endblock %}

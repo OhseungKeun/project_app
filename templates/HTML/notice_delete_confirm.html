@@ -1,0 +1,21 @@
+{% extends "HTML/base.html" %}
+
+{% block title %}공지 삭제{% endblock %}
+
+{% block content %}
+<h2>공지 삭제</h2>
+
+<p>정말 아래 공지를 삭제하시겠습니까?</p>
+
+<h3>{{ notice.title }}</h3>
+<p>{{ notice.content }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" style="color:white; background:red; padding:10px;">
+        삭제하기
+    </button>
+    <a href="{% url 'notice_detail' notice.id %}">취소</a>
+</form>
+
+{% endblock %}

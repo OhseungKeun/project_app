@@ -3,35 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>모의고사 결과</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h2 { margin-bottom: 20px; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        .reward { color: blue; font-weight: bold; }
+        .warning { color: red; font-weight: bold; }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+        a:hover { background: #0056b3; }
+    </style>
 </head>
 <body>
 
 <h2>{{ category.name }} 모의고사 결과</h2>
 
-{% if message %}
-{% endif %}
-
-<p>총 문항 수: {{ question_count }} 문제</p>
-<p>내 점수: {{ score }} 점</p>
+<p>총 문항 수: <strong>{{ question_count }}</strong> 문제</p>
+<p>맞춘 문제 수: <strong>{{ score }}</strong> 문제</p>
 
 {% if passed %}
-    <p style="color:green;">통과하였습니다!</p>
+    <p class="pass">🎉 축하합니다! 합격하였습니다!</p>
 {% else %}
-    <p style="color:red;">불합격입니다.</p>
+    <p class="fail">😢 아쉽지만 불합격입니다.</p>
 {% endif %}
 
+<hr>
+
 {% if already_rewarded %}
-    <p style="color:red;">
-        이미 이 시험에서 포인트를 받았습니다. (보상: 0원)
+    <p class="warning">
+        ⚠ 이미 이 모의고사에서 보상을 받은 적이 있습니다.<br>
+        이번에는 <strong>0원</strong>이 지급됩니다.
     </p>
 {% else %}
     {% if reward > 0 %}
-        <p style="color:blue;">이번 시험으로 {{ reward }}원이 적립되었습니다!</p>
+        <p class="reward">
+            🎁 축하합니다! 이번 시험으로 <strong>{{ reward }}원</strong>이 적립되었습니다!
+        </p>
+    {% else %}
+        <p class="fail">보상 조건(70% 이상)을 충족하지 못했습니다.</p>
     {% endif %}
 {% endif %}
 
+<hr>
 
-<p>현재 포인트: {{ balance }}원</p>
+<p>📌 현재 포인트: <strong>{{ balance }}원</strong></p>
 
 <a href="{% url 'main' %}">홈으로 돌아가기</a>
 

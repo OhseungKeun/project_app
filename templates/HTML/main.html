@@ -1,21 +1,15 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>메인 화면</title>
-    <style>
-        body { background:#000; color:#fff; font-family:Arial; text-align:center; }
-        .box { border:1px solid #666; margin:10px; padding:25px; }
-        .menu-bar { display:flex; justify-content:space-between; border:1px solid #fff; padding:10px; }
-        a { color:#fff; text-decoration:none; }
-    </style>
-</head>
-<body>
+{% extends "HTML/base.html" %}
 
-<div class="menu-bar">
-     <div><a href="#">메뉴</a></div>
-    <div><a href="/user">회원 정보</a></div>
-</div>
+{% block title %}메인 화면{% endblock %}
+
+{% block content %}
+
+<style>
+    body { background:#000; color:#fff; font-family:Arial; text-align:center; }
+    .box { border:1px solid #666; margin:10px; padding:25px; }
+    .menu-bar { display:flex; justify-content:space-between; border:1px solid #fff; padding:10px; }
+    a { color:#fff; text-decoration:none; }
+</style>
 
 <div class="box">
     {% if username %}
@@ -37,5 +31,4 @@
     <a href="/point">포인트 전환(현금화)</a>
 </div>
 
-</body>
-</html>
+{% endblock %}

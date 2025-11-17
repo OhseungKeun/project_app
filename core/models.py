@@ -1,0 +1,93 @@
+from django.db import models
+from django.contrib.auth.models import User
+
+# -----------------------
+# 유저 포인트
+# -----------------------
+class UserPoint(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    balance = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.balance}P"
+
+
+# -----------------------
+# 대분류 카테고리
+# -----------------------
+class MainCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        db_table = "quiz_main_category"
+
+    def __str__(self):
+        return self.name
+
+
+# -----------------------
+# 소분류 카테고리
+# -----------------------
+class SubCategory(models.Model):
+    main = models.ForeignKey(MainCategory, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = "quiz_sub_category"
+        unique_together = ('main', 'name')  # 동일 대분류에서 중복 소분류 방지
+
+    def __str__(self):
+        return f"{self.main.name} - {self.name}"
+
+
+# -----------------------
+# 문제 테이블
+# -----------------------
+class Quiz(models.Model):
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    question = models.CharField(max_length=255)
+    choice1 = models.CharField(max_length=100)
+    choice2 = models.CharField(max_length=100)
+    choice3 = models.CharField(max_length=100)
+    choice4 = models.CharField(max_length=100)
+    answer = models.IntegerField()  # 1~4 정답 번호
+
+    class Meta:
+        db_table = 'quiz_question'
+
+    def __str__(self):
+        return f"[{self.subcategory.name}] {self.question}"
+
+
+# -----------------------
+# 유저 모의고사 기록 (소분류 단위로 저장)
+# -----------------------
+class UserExamRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    passed = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
+    rewarded = models.BooleanField(default=False)  # 기존 코드에 있던 rewarded 필드 추가
+
+    class Meta:
+        db_table = "user_exam_record"
+        unique_together = ('user', 'subcategory')  # 동일 소분류 재보상 방지
+
+    def __str__(self):
+        return f"{self.user.username} - {self.subcategory.name}: {'통과' if self.passed else '미통과'}"
+
+
+# -----------------------
+# 공지 사항(admin만 작성)
+# -----------------------
+class Notice(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "notice"
+
+    def __str__(self):
+        return self.title

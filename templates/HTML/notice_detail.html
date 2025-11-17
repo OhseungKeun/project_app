@@ -1,0 +1,21 @@
+{% extends "HTML/base.html" %}
+{% block content %}
+
+<h2>{{ notice.title }}</h2>
+<p style="color: gray;">작성일: {{ notice.created_at|date:"Y-m-d H:i" }}</p>
+
+<div style="border:1px solid #555; padding:15px;">
+    {{ notice.content|linebreaks }}
+</div>
+
+{% if user.is_superuser %}
+    <a href="{% url 'notice_delete' notice.id %}" 
+       style="color:red; font-weight:bold;">
+       [공지 삭제]
+    </a>
+{% endif %}
+
+<br>
+<a href="{% url 'notice_list' %}">← 공지 목록으로</a>
+
+{% endblock %}

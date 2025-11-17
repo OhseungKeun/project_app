@@ -1,0 +1,23 @@
+{% extends "HTML/base.html" %}
+{% block content %}
+
+<h2>📢 공지사항</h2>
+
+<ul>
+    {% for n in notices %}
+        <li>
+            <a href="{% url 'notice_detail' n.id %}">
+                {{ n.title }}
+            </a> 
+            <span style="color: gray;">({{ n.created_at|date:"Y-m-d" }})</span>
+        </li>
+    {% empty %}
+        <p>등록된 공지가 없습니다.</p>
+    {% endfor %}
+</ul>
+
+{% if request.user.is_superuser %}
+    <a href="{% url 'notice_create' %}" class="btn">공지 작성하기</a>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'HTML/base.html' %}
+
+{% block title %}모의고사 대분류 선택{% endblock %}
+
+{% block content %}
+
+<style>
+    .main-btn {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px 20px;
+        background: #333;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .sub-box {
+        margin-top: 20px;
+        display: none;
+    }
+
+    .sub-btn {
+        display: inline-block;
+        margin: 8px;
+        padding: 8px 20px;
+        background: #4CAF50;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+</style>
+
+<script>
+    function toggleSub(mainId) {
+        // 모든 sub 영역 숨기기
+        const allSub = document.querySelectorAll(".sub-box");
+        allSub.forEach(div => div.style.display = "none");
+
+        // 선택한 부분만 표시
+        document.getElementById("sub-" + mainId).style.display = "block";
+    }
+</script>
+
+<h2>📘 모의고사 대분류를 선택하세요</h2>
+
+{% for main in main_categories %}
+    <div class="main-btn" onclick="toggleSub({{ main.id }})">
+        {{ main.name }}
+    </div>
+{% endfor %}
+
+<hr style="margin: 30px 0;">
+
+{% for main in main_categories %}
+    <div id="sub-{{ main.id }}" class="sub-box">
+        <h3>📘 {{ main.name }} 중분류를 선택하세요</h3>
+
+        {% for sub in main.subcategory_set.all %}
+            <a class="sub-btn" href="{% url 'quiz_view' sub.id %}">
+                {{ sub.name }}
+            </a>
+        {% empty %}
+            <p>등록된 중분류가 없습니다.</p>
+        {% endfor %}
+    </div>
+{% endfor %}
+
+{% endblock %}

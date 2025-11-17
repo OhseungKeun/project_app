@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}사조참치{% endblock %}</title>
+
+    <style>
+        .top-nav {
+            width: 100%;
+            background: #1f1f1f;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-left img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .nav-left span {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-right a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            padding: 6px 14px;
+            background: #444;
+            border-radius: 8px;
+            color: white !important;
+            transition: 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ⭐ 공통 헤더 -->
+    <div class="top-nav">
+
+        <!-- 왼쪽 -->
+        <div class="nav-left">
+            <a href="{% url 'main' %}" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+            <img src="{% static 'img/111.png' %}" alt="참치아이콘">
+            <span>사조참치</span>
+        </div>
+
+        <!-- 오른쪽 -->
+        <div class="nav-right">
+
+            <a href="/">홈</a>
+            <a href="{% url 'notice_list' %}">공지</a>
+
+            {% if user.is_authenticated %}
+                <a class="login-btn" href="/logout/">로그아웃</a>
+            {% else %}
+                <a class="login-btn" href="/login/">로그인</a>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- ⭐ 개별 페이지 내용이 들어가는 부분 -->
+    <div style="padding: 20px;">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

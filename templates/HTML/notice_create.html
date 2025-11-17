@@ -1,0 +1,15 @@
+{% extends "HTML/base.html" %}
+{% block content %}
+
+<h2>공지 작성</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <p>제목: <input type="text" name="title" required></p>
+    <p>내용:</p>
+    <textarea name="content" rows="10" cols="50" required></textarea><br><br>
+
+    <button type="submit">등록</button>
+</form>
+
+{% endblock %}

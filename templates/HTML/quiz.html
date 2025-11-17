@@ -1,25 +1,26 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ category.name }} 모의고사</title>
-</head>
-<body>
-    <h1>{{ category.name }} 모의고사</h1>
+{% extends "HTML/base.html" %}
 
-    <form method="post" action="/quiz/{{ category.id }}/submit/">
-        {% csrf_token %}
+{% block title %}{{ category.name }} 모의고사{% endblock %}
 
-        {% for q in questions %}
-        <div>
+{% block content %}
+
+<h1>{{ category.name }} 모의고사</h1>
+
+<form method="POST" action="{% url 'quiz_submit' subcategory.id %}">
+    {% csrf_token %}
+
+    {% for q in questions %}
+        <div style="margin-bottom: 20px;">
             <p><strong>{{ forloop.counter }}. {{ q.question }}</strong></p>
+
             <label><input type="radio" name="{{ q.id }}" value="1"> {{ q.choice1 }}</label><br>
             <label><input type="radio" name="{{ q.id }}" value="2"> {{ q.choice2 }}</label><br>
             <label><input type="radio" name="{{ q.id }}" value="3"> {{ q.choice3 }}</label><br>
             <label><input type="radio" name="{{ q.id }}" value="4"> {{ q.choice4 }}</label><br>
         </div>
-        {% endfor %}
+    {% endfor %}
+
     <button type="submit">제출</button>
 </form>
-</body>
-</html>
+
+{% endblock %}
