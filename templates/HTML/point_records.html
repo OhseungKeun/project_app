@@ -1,0 +1,59 @@
+{% extends "HTML/base.html" %}
+
+{% block content %}
+<h2>포인트 사용 내역</h2>
+
+<hr>
+
+<h3>🎁 기프티콘 구매 내역</h3>
+
+{% if gift_records %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>상품명</th>
+        <th>사용 포인트</th>
+        <th>전화번호</th>
+        <th>구매일</th>
+    </tr>
+    {% for record in gift_records %}
+    <tr>
+        <td>{{ record.gift_name }}</td>
+        <td>{{ record.cost }}P</td>
+        <td>{{ record.user.userprofile.phone }}</td>
+        <td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>기프티콘 구매 내역이 없습니다.</p>
+{% endif %}
+
+<hr>
+
+<h3>💸 출금 신청 내역</h3>
+
+{% if withdraw_records %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>은행명</th>
+        <th>계좌번호</th>
+        <th>출금 금액</th>
+        <th>신청일</th>
+    </tr>
+    {% for record in withdraw_records %}
+    <tr>
+        <td>{{ record.bank_name }}</td>
+        <td>{{ record.account_number }}</td>
+        <td>{{ record.amount }}P</td>
+        <td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>출금 신청 내역이 없습니다.</p>
+{% endif %}
+
+<br>
+<a href="/point/">뒤로가기</a>
+
+{% endblock %}

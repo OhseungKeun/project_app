@@ -1,0 +1,17 @@
+{% extends "HTML/base.html" %}
+{% block content %}
+<h2>포인트 출금</h2>
+
+<p>보유 포인트: {{ balance }}P</p>
+
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+<form method="POST" action="{% url 'withdraw_process' %}">
+    {% csrf_token %}
+    <label>출금할 포인트 입력:</label>
+    <input type="number" name="amount" min="1000" required>
+    <button type="submit">출금하기</button>
+</form>
+{% endblock %}

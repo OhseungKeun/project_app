@@ -1,0 +1,13 @@
+{% extends "HTML/base.html" %}
+
+{% block title %}출금 완료{% endblock %}
+
+{% block content %}
+<h2>출금 완료</h2>
+
+<p>{{ amount }}P 출금이 완료되었습니다.</p>
+
+<p>현재 남은 포인트: {{ balance }}P</p>
+
+<a href="{% url 'point' %}">포인트 페이지로 돌아가기</a>
+{% endblock %}

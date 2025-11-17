@@ -1,0 +1,11 @@
+{% extends "HTML/base.html" %}
+{% block content %}
+<h2>기프티콘 발송 완료!</h2>
+
+<p>{{ gift.gift_name }} 교환 완료!</p>
+<p>코드: <strong>{{ gift.code }}</strong></p>
+
+<p>남은 포인트: {{ balance }}P</p>
+
+<a href="/">홈으로</a>
+{% endblock %}

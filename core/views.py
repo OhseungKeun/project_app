@@ -1,13 +1,14 @@
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from .models import UserPoint, Quiz, MainCategory, SubCategory, UserExamRecord, Notice
+from .models import UserPoint, Quiz, MainCategory, SubCategory, UserExamRecord, Notice, WithdrawRecord, GiftRecord
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.contrib.auth.decorators import user_passes_test
-
+import uuid
+code = uuid.uuid4().hex[:12].upper()
 
 # 메인 페이지
 def main(request):
@@ -133,9 +134,120 @@ def quiz_submit(request, sub_id):
 # ------------------------------------
 # 환급 페이지
 # ------------------------------------
+@login_required
 def point(request):
-    return render(request, "HTML/point.html")
+    user_point, _ = UserPoint.objects.get_or_create(user=request.user)
+    return render(request, "HTML/point.html", {"balance": user_point.balance})
+    
+@login_required
+def withdraw_view(request):
+    user_point = UserPoint.objects.get(user=request.user)
+    return render(request, "HTML/withdraw.html", {"balance": user_point.balance})
 
+# ------------------------------------
+# 출금
+# ------------------------------------
+@login_required
+def withdraw_process(request):
+    if request.method != "POST":
+        return redirect("withdraw")
+
+    amount = int(request.POST.get("amount"))
+    user = request.user
+    user_point = UserPoint.objects.get(user=user)
+
+    # 최소 조건
+    if amount < 1000:
+        return render(request, "HTML/withdraw.html", {
+            "balance": user_point.balance,
+            "error": "최소 1000포인트부터 출금 가능합니다."
+        })
+
+    if user_point.balance < amount:
+        return render(request, "HTML/withdraw.html", {
+            "balance": user_point.balance,
+            "error": "포인트가 부족합니다."
+        })
+
+    # 차감
+    user_point.balance -= amount
+    user_point.save()
+
+    # 기록 저장
+    WithdrawRecord.objects.create(user=user, amount=amount)
+
+    return render(request, "HTML/withdraw_success.html", {
+        "withdraw_amount": amount,
+        "balance": user_point.balance
+    })
+
+# ------------------------------------
+# 기프티콘 교환 페이지
+# ------------------------------------
+@login_required
+def gift_view(request):
+    user_point = UserPoint.objects.get(user=request.user)
+
+    # 기프티콘 목록 샘플
+    gifts = [
+        {"name": "스타벅스 아메리카노", "cost": 4500},
+        {"name": "배스킨라빈스 싱글", "cost": 3500},
+        {"name": "GS25 5천원 쿠폰", "cost": 5000},
+    ]
+
+    return render(request, "HTML/gift.html", {
+        "balance": user_point.balance,
+        "gifts": gifts
+    })
+
+# ------------------------------------
+# 기프티콘 구매 처리
+# ------------------------------------
+@login_required
+def gift_buy(request):
+    if request.method != "POST":
+        return redirect("gift")
+
+    gift_name = request.POST.get("gift_name")
+    cost = int(request.POST.get("cost"))
+
+    user = request.user
+    user_point = UserPoint.objects.get(user=user)
+
+    if user_point.balance < cost:
+        return render(request, "HTML/gift.html", {
+            "balance": user_point.balance,
+            "error": "포인트가 부족합니다."
+        })
+
+    # 포인트 차감
+    user_point.balance -= cost
+    user_point.save()
+
+    # 기록 생성
+    gift = GiftRecord.objects.create(
+        user=user,
+        gift_name=gift_name,
+        cost=cost,
+        code=code
+    )
+
+    return render(request, "HTML/gift_success.html", {
+        "gift": gift,
+        "balance": user_point.balance
+    })
+
+# ------------------------------------
+# 거래 내역 확인
+# ------------------------------------
+def point_records(request):
+    gift_records = GiftRecord.objects.filter(user=request.user).order_by('-created_at')
+    withdraw_records = WithdrawRecord.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, "HTML/point_records.html", {
+        "gift_records": gift_records,
+        "withdraw_records": withdraw_records,
+    })
 
 # ------------------------------------
 # 유저 정보
@@ -198,6 +310,7 @@ def signup(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        phone = request.POST.get("phone")
 
         # ID 중복 확인
         if User.objects.filter(username=username).exists():
@@ -206,7 +319,8 @@ def signup(request):
         # 유저 생성
         user = User.objects.create(
             username=username,
-            password=make_password(password)
+            password=make_password(password),
+            phone=phone
         )
 
         # 포인트 계정 생성

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # -----------------------
 # 유저 포인트
 # -----------------------
@@ -10,6 +11,49 @@ class UserPoint(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.balance}P"
+
+
+# -----------------------
+# 로그인한 유저 정보
+# -----------------------
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        db_table = "user_profile"
+
+
+# -----------------------
+# 출금 신청 내역
+# -----------------------
+class WithdrawRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "withdraw_record"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.amount}P 출금"
+
+
+# -----------------------
+# 기프티콘 구매 내역
+# -----------------------
+class GiftRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    gift_name = models.CharField(max_length=100)
+    cost = models.IntegerField()
+    code = models.CharField(max_length=50, default="", unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "gift_record"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.gift_name} ({self.code})"
 
 
 # -----------------------
@@ -34,7 +78,7 @@ class SubCategory(models.Model):
 
     class Meta:
         db_table = "quiz_sub_category"
-        unique_together = ('main', 'name')  # 동일 대분류에서 중복 소분류 방지
+        unique_together = ('main', 'name')
 
     def __str__(self):
         return f"{self.main.name} - {self.name}"
@@ -90,4 +134,5 @@ class Notice(models.Model):
         db_table = "notice"
 
     def __str__(self):
-        return self.title
+        return self.title\
+

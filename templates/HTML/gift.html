@@ -1,0 +1,26 @@
+{% extends "HTML/base.html" %}
+{% block content %}
+
+<h2>기프티콘 교환</h2>
+
+<p>보유 포인트: {{ balance }}P</p>
+
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+<ul>
+    {% for g in gifts %}
+        <li>
+            <form method="POST" action="{% url 'gift_buy' %}">
+                {% csrf_token %}
+                <strong>{{ g.name }}</strong> ({{ g.cost }}P)
+                <input type="hidden" name="gift_name" value="{{ g.name }}">
+                <input type="hidden" name="cost" value="{{ g.cost }}">
+                <button type="submit">교환</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

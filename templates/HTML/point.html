@@ -1,0 +1,13 @@
+{% extends "HTML/base.html" %}
+{% block content %}
+
+<h2>포인트 관리</h2>
+
+<p>현재 보유 포인트: {{ balance }}P</p>
+
+<ul>
+    <li><a href="{% url 'withdraw' %}">포인트 출금하기</a></li>
+    <li><a href="{% url 'gift' %}">기프티콘 교환하기</a></li>
+</ul>
+
+{% endblock %}
