@@ -29,6 +29,8 @@ class UserProfile(models.Model):
 # -----------------------
 class WithdrawRecord(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bank_name = models.CharField(max_length=50)
+    account_number = models.CharField(max_length=50)
     amount = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -37,6 +39,22 @@ class WithdrawRecord(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.amount}P 출금"
+
+
+# -----------------------
+# 계좌 정보
+# -----------------------
+class UserBankInfo(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bank_name = models.CharField(max_length=50)
+    account_number = models.CharField(max_length=50)
+    account_holder = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = "user_bank_info"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.bank_name} / {self.account_number}"
 
 
 # -----------------------

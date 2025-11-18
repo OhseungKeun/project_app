@@ -1,62 +1,147 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>모의고사 결과</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        h2 { margin-bottom: 20px; }
-        .pass { color: green; font-weight: bold; }
-        .fail { color: red; font-weight: bold; }
-        .reward { color: blue; font-weight: bold; }
-        .warning { color: red; font-weight: bold; }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 8px 16px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-        }
-        a:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
+{% extends "HTML/base.html" %}
+{% block content %}
 
-<h2>{{ category.name }} 모의고사 결과</h2>
+<link href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 
-<p>총 문항 수: <strong>{{ question_count }}</strong> 문제</p>
-<p>맞춘 문제 수: <strong>{{ score }}</strong> 문제</p>
+<style>
+    body {
+        font-family: 'Pretendard', sans-serif;
+    }
 
-{% if passed %}
-    <p class="pass">🎉 축하합니다! 합격하였습니다!</p>
-{% else %}
-    <p class="fail">😢 아쉽지만 불합격입니다.</p>
-{% endif %}
+    .result-container {
+        max-width: 650px;
+        margin: 40px auto;
+        background: #181818;
+        padding: 40px 35px;
+        border-radius: 16px;
+        border: 1px solid #2b2b2b;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    }
 
-<hr>
+    .result-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #fff;
+        text-align: center;
+    }
 
-{% if already_rewarded %}
-    <p class="warning">
-        ⚠ 이미 이 모의고사에서 보상을 받은 적이 있습니다.<br>
-        이번에는 <strong>0원</strong>이 지급됩니다.
-    </p>
-{% else %}
-    {% if reward > 0 %}
-        <p class="reward">
-            🎁 축하합니다! 이번 시험으로 <strong>{{ reward }}원</strong>이 적립되었습니다!
-        </p>
+    .info-text {
+        font-size: 17px;
+        margin: 10px 0;
+        color: #ddd;
+    }
+
+    .pass {
+        color: #4caf50;
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .fail {
+        color: #ef5350;
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .reward-box {
+        padding: 18px;
+        margin-top: 25px;
+        background: #222;
+        border-radius: 10px;
+        border: 1px solid #333;
+    }
+
+    .reward-text {
+        color: #ffd900;
+        font-size: 18px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .warning {
+        color: #ff7878;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 20px;
+    }
+
+    .point-display {
+        margin-top: 30px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #ccc;
+        text-align: center;
+    }
+
+    .back-btn {
+        margin-top: 30px;
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: #242424;
+        color: #fff;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 17px;
+        text-decoration: none;
+        border: 1px solid #333;
+        transition: 0.2s;
+    }
+
+    .back-btn:hover {
+        background: #333;
+        border-color: #444;
+    }
+</style>
+
+<div class="result-container">
+
+    <div class="result-title">
+        {{ category.name }} 모의고사 결과
+    </div>
+
+    <div class="info-text">총 문항 수: <strong>{{ question_count }}</strong> 문제</div>
+    <div class="info-text">맞춘 문제 수: <strong>{{ score }}</strong> 문제</div>
+
+    {% if passed %}
+        <div class="pass">🎉 합격을 축하합니다!</div>
     {% else %}
-        <p class="fail">보상 조건(70% 이상)을 충족하지 못했습니다.</p>
+        <div class="fail">😢 아쉽지만 불합격입니다.</div>
     {% endif %}
-{% endif %}
 
-<hr>
+    <div class="reward-box">
 
-<p>📌 현재 포인트: <strong>{{ balance }}원</strong></p>
+        {% if already_rewarded %}
+            <div class="warning">
+                ⚠ 이미 이 시험에서 보상을 받았습니다.<br>
+                이번에는 <strong>0P</strong>이 지급됩니다.
+            </div>
+        {% else %}
+            {% if reward > 0 %}
+                <div class="reward-text">
+                    🎁 <strong>{{ reward }}P</strong> 적립되었습니다!
+                </div>
+            {% else %}
+                <div class="fail" style="font-size:16px;">
+                    보상 기준(70% 이상)에 미달했습니다.
+                </div>
+            {% endif %}
+        {% endif %}
 
-<a href="{% url 'main' %}">홈으로 돌아가기</a>
+    </div>
 
-</body>
-</html>
+    <div class="point-display">
+        📌 현재 포인트: <strong style="color:#ffd900;">{{ balance }}P</strong>
+    </div>
+
+    <a href="{% url 'main' %}" class="back-btn">홈으로 돌아가기</a>
+
+</div>
+
+{% endblock %}

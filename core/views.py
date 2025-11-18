@@ -1,6 +1,6 @@
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
-from .models import UserPoint, Quiz, MainCategory, SubCategory, UserExamRecord, Notice, WithdrawRecord, GiftRecord
+from .models import UserPoint, Quiz, MainCategory, SubCategory, UserExamRecord, Notice, WithdrawRecord, GiftRecord, UserProfile, UserBankInfo
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -8,7 +8,6 @@ from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.contrib.auth.decorators import user_passes_test
 import uuid
-code = uuid.uuid4().hex[:12].upper()
 
 # 메인 페이지
 def main(request):
@@ -141,8 +140,49 @@ def point(request):
     
 @login_required
 def withdraw_view(request):
-    user_point = UserPoint.objects.get(user=request.user)
-    return render(request, "HTML/withdraw.html", {"balance": user_point.balance})
+    user = request.user
+    user_point = UserPoint.objects.get(user=user)
+
+    # 기존 계좌 정보(자동 입력용)
+    bank_info = UserBankInfo.objects.filter(user=user).first()
+
+    return render(request, "HTML/withdraw.html", {
+        "balance": user_point.balance,
+        "bank_info": bank_info,
+    })
+
+# ------------------------------------
+# 계좌 관리
+# ------------------------------------
+@login_required
+def bank_info_view(request):
+    bank_info = UserBankInfo.objects.filter(user=request.user).first()
+
+    bank_list = ["국민은행", "우리은행", "신한은행", "카카오뱅크", "토스뱅크", "농협은행"]
+
+    return render(request, "HTML/bank_info.html", {
+        "bank_info": bank_info,
+        "bank_list": bank_list
+    })
+
+@login_required
+def bank_info_save(request):
+    if request.method != "POST":
+        return redirect("bank_info")
+
+    user = request.user
+    bank_name = request.POST.get("bank_name")
+    account_number = request.POST.get("account_number")
+    account_holder = request.POST.get("account_holder")
+
+    # 저장 or 업데이트
+    bank_info, created = UserBankInfo.objects.get_or_create(user=user)
+    bank_info.bank_name = bank_name
+    bank_info.account_number = account_number
+    bank_info.account_holder = account_holder
+    bank_info.save()
+
+    return redirect("bank_info")
 
 # ------------------------------------
 # 출금
@@ -152,33 +192,62 @@ def withdraw_process(request):
     if request.method != "POST":
         return redirect("withdraw")
 
-    amount = int(request.POST.get("amount"))
     user = request.user
     user_point = UserPoint.objects.get(user=user)
 
-    # 최소 조건
+    # 기존 계좌 정보 가져오기
+    bank_info = UserBankInfo.objects.filter(user=user).first()
+    if not bank_info:
+        return render(request, "HTML/withdraw.html", {
+            "balance": user_point.balance,
+            "error": "계좌 정보가 등록되어 있지 않습니다. 먼저 계좌를 등록해주세요."
+        })
+
+    amount = int(request.POST.get("amount"))
+
     if amount < 1000:
         return render(request, "HTML/withdraw.html", {
             "balance": user_point.balance,
-            "error": "최소 1000포인트부터 출금 가능합니다."
+            "error": "최소 1000포인트부터 출금 가능합니다.",
+            "bank_info": bank_info
         })
 
     if user_point.balance < amount:
         return render(request, "HTML/withdraw.html", {
             "balance": user_point.balance,
-            "error": "포인트가 부족합니다."
+            "error": "포인트가 부족합니다.",
+            "bank_info": bank_info
         })
 
-    # 차감
+    # 출금 처리
     user_point.balance -= amount
     user_point.save()
 
-    # 기록 저장
-    WithdrawRecord.objects.create(user=user, amount=amount)
+    # 출금 기록 저장
+    WithdrawRecord.objects.create(
+        user=user,
+        bank_name=bank_info.bank_name,
+        account_number=bank_info.account_number,
+        amount=amount
+    )
 
     return render(request, "HTML/withdraw_success.html", {
         "withdraw_amount": amount,
-        "balance": user_point.balance
+        "balance": user_point.balance,
+        "bank_name": bank_info.bank_name,
+        "account_number": bank_info.account_number,
+    })
+
+# ------------------------------------
+# 포인트 출금 내역 확인
+# ------------------------------------
+def point_records(request):
+    gift_records = GiftRecord.objects.filter(user=request.user).order_by('-created_at')
+    withdraw_records = WithdrawRecord.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, "HTML/point_records.html", {
+        "gift_records": gift_records,
+        "withdraw_records": withdraw_records,
     })
 
 # ------------------------------------
@@ -213,6 +282,7 @@ def gift_buy(request):
 
     user = request.user
     user_point = UserPoint.objects.get(user=user)
+    code = uuid.uuid4().hex[:12].upper()
 
     if user_point.balance < cost:
         return render(request, "HTML/gift.html", {
@@ -237,17 +307,7 @@ def gift_buy(request):
         "balance": user_point.balance
     })
 
-# ------------------------------------
-# 거래 내역 확인
-# ------------------------------------
-def point_records(request):
-    gift_records = GiftRecord.objects.filter(user=request.user).order_by('-created_at')
-    withdraw_records = WithdrawRecord.objects.filter(user=request.user).order_by('-created_at')
 
-    return render(request, "HTML/point_records.html", {
-        "gift_records": gift_records,
-        "withdraw_records": withdraw_records,
-    })
 
 # ------------------------------------
 # 유저 정보
@@ -320,6 +380,11 @@ def signup(request):
         user = User.objects.create(
             username=username,
             password=make_password(password),
+        )
+
+        # 프로필 생성 (전화번호 저장)
+        UserProfile.objects.create(
+            user=user,
             phone=phone
         )
 
@@ -346,12 +411,6 @@ def notice_list(request):
     return render(request, "HTML/notice_list.html", {
         "notices": notices
     })
-
-# ------------------------------------
-# 공지 작성 페이지(관리자만 접근 가능)
-# ------------------------------------
-def admin_only(user):
-    return user.is_superuser or user.is_staff
 
 # ------------------------------------
 # 공지 생성

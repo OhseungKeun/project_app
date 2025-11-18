@@ -11,13 +11,13 @@ urlpatterns = [
     path('check-username/', views.check_username, name='check_username'),  
     path('logout/', views.logout_view, name='logout'), 
 
-    # ----- 수정 후 -----
+    # 퀴즈
     path('quiz/', views.main_category_list, name="main_category_list"),                    
     path('quiz/<int:main_id>/', views.sub_category_list, name="sub_category_list"),       
     path('quiz/sub/<int:sub_id>/', views.quiz_view, name="quiz_view"),                    
     path('quiz/sub/<int:sub_id>/submit/', views.quiz_submit, name="quiz_submit"),    
 
-    # 포인트 / 유저 정보
+    # 포인트 / 유저 정보 / 은행
     path("user/", views.user_info, name="user_info"),
     path("point/", views.point, name="point"),
     path("point/withdraw/", views.withdraw_view, name="withdraw"),
@@ -25,6 +25,8 @@ urlpatterns = [
     path("point/records/", views.point_records, name="point_records"),
     path("point/gift/", views.gift_view, name="gift"),
     path("point/gift/buy/", views.gift_buy, name="gift_buy"),
+    path("user/bank/", views.bank_info_view, name="bank_info"),
+    path("user/bank/save/", views.bank_info_save, name="bank_info_save"),
     
     # 공지
     path("notice/", views.notice_list, name="notice_list"),

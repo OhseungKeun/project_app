@@ -1,34 +1,152 @@
 {% extends "HTML/base.html" %}
-
 {% block title %}메인 화면{% endblock %}
-
 {% block content %}
 
+<link href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+
 <style>
-    body { background:#000; color:#fff; font-family:Arial; text-align:center; }
-    .box { border:1px solid #666; margin:10px; padding:25px; }
-    .menu-bar { display:flex; justify-content:space-between; border:1px solid #fff; padding:10px; }
-    a { color:#fff; text-decoration:none; }
+    body {
+        font-family: 'Pretendard', sans-serif;
+        background: #0d0d0d;
+        color: #fff;
+    }
+
+    /* 전체 컨테이너 */
+    .main-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+    }
+
+    /* 인사말 카드 */
+    .welcome-card {
+        background: #1a1a1a;
+        border: 1px solid #222;
+        padding: 30px 20px;
+        border-radius: 14px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        animation: fadeIn 0.4s ease;
+    }
+
+    .welcome-card h2 {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .welcome-card p {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: #bbb;
+    }
+
+    /* 메뉴 그리드 */
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-top: 10px;
+    }
+
+    .menu-item {
+        background: #1c1c1c;
+        border: 1px solid #2c2c2c;
+        padding: 25px 10px;
+        border-radius: 16px;
+        font-size: 18px;
+        color: #fff;
+        font-weight: 600;
+        transition: 0.25s;
+        text-decoration: none;
+        display: block;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    .menu-item:hover {
+        background: #2b2b2b;
+        transform: translateY(-5px);
+    }
+
+    .menu-item span {
+        display: block;
+        margin-top: 12px;
+    }
+
+    /* 아이콘 이미지 */
+    .menu-icon {
+        width: 40px;
+        margin-bottom: 5px;
+        filter: brightness(0) invert(1);
+    }
+
+    /* 애니메이션 */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logout-btn, .auth-btn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: #e53935;
+        color: #fff;
+        border-radius: 8px;
+        display: inline-block;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+        background: #ff5252;
+    }
+
+    .auth-btn {
+        background: #1e88e5;
+    }
+
+    .auth-btn:hover {
+        background: #42a5f5;
+    }
 </style>
 
-<div class="box">
+
+<div class="main-wrapper">
+
+    <!-- ⭐ 로그인 상태 -->
     {% if username %}
-        <h2>{{ username }}님 환영합니다!</h2>
-        <p>보유 포인트: {{ balance }}P</p>
-        <a href="{% url 'logout' %}">로그아웃</a>
+    <div class="welcome-card">
+        <h2>👋 {{ username }}님, 환영합니다!</h2>
+        <p>현재 보유 포인트: <strong>{{ balance }}P</strong></p>
+
+        <a href="{% url 'logout' %}" class="logout-btn">로그아웃</a>
+    </div>
+
     {% else %}
-        <h2>로그인이 필요합니다.</h2>
-        <a href="{% url 'login' %}">로그인</a> |
-        <a href="{% url 'signup' %}">회원가입</a>
+    <div class="welcome-card">
+        <h2>로그인이 필요합니다</h2>
+        <p>포인트 적립 및 서비스를 이용하려면 로그인하세요.</p>
+
+        <a href="{% url 'login' %}" class="auth-btn">로그인</a>
+        <a href="{% url 'signup' %}" class="auth-btn" style="background:#43a047;">회원가입</a>
+    </div>
     {% endif %}
-</div>
 
-<div class="box">
-    <a href="/quiz">퀴즈 서비스 바로가기</a>
-</div>
 
-<div class="box">
-    <a href="/point">포인트 전환(현금화)</a>
+    <!-- ⭐ 메뉴 그리드 -->
+    <div class="menu-grid">
+        <a href="/quiz" class="menu-item">
+            <img class="menu-icon" src="https://cdn-icons-png.flaticon.com/512/891/891462.png">
+            <span>모의고사</span>
+        </a>
+
+        <a href="/point" class="menu-item">
+            <img class="menu-icon" src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png">
+            <span>포인트 전환</span>
+        </a>
+    </div>
+
 </div>
 
 {% endblock %}

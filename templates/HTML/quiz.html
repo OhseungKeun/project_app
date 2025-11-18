@@ -1,26 +1,143 @@
 {% extends "HTML/base.html" %}
-
 {% block title %}{{ category.name }} 모의고사{% endblock %}
 
 {% block content %}
 
-<h1>{{ category.name }} 모의고사</h1>
+<style>
+    .quiz-wrapper {
+        max-width: 780px;
+        margin: 30px auto;
+        background: #1b1b1b;
+        padding: 25px;
+        border-radius: 14px;
+        border: 1px solid #333;
+        color: white;
+        animation: fadeIn 0.3s ease;
+    }
 
-<form method="POST" action="{% url 'quiz_submit' subcategory.id %}">
-    {% csrf_token %}
+    .quiz-header {
+        font-size: 26px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 25px;
+    }
 
-    {% for q in questions %}
-        <div style="margin-bottom: 20px;">
-            <p><strong>{{ forloop.counter }}. {{ q.question }}</strong></p>
+    .question-card {
+        margin-bottom: 25px;
+        padding: 18px;
+        border-radius: 12px;
+        background: #242424;
+        border: 1px solid #333;
+    }
 
-            <label><input type="radio" name="{{ q.id }}" value="1"> {{ q.choice1 }}</label><br>
-            <label><input type="radio" name="{{ q.id }}" value="2"> {{ q.choice2 }}</label><br>
-            <label><input type="radio" name="{{ q.id }}" value="3"> {{ q.choice3 }}</label><br>
-            <label><input type="radio" name="{{ q.id }}" value="4"> {{ q.choice4 }}</label><br>
+    .question-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    .choice-box {
+        margin-bottom: 8px;
+        padding: 10px 14px;
+        background: #2c2c2c;
+        border-radius: 8px;
+        border: 1px solid #444;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .choice-box:hover {
+        background: #3a3a3a;
+    }
+
+    .choice-box input {
+        margin-right: 10px;
+    }
+
+    /* 선택 시 하이라이트 */
+    .choice-box.selected {
+        background: #4fa3ff;
+        border-color: #1d8aff;
+        color: #fff;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        background: #4fa3ff;
+        color: white;
+        font-size: 17px;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .submit-btn:hover {
+        background: #1d8aff;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    // 라디오 버튼 선택 시 박스 색 변경
+    function selectChoice(questionId, choiceElement) {
+        const allChoices = document.querySelectorAll(".q" + questionId);
+        allChoices.forEach(c => c.classList.remove("selected"));
+        choiceElement.classList.add("selected");
+    }
+</script>
+
+<div class="quiz-wrapper">
+
+    <div class="quiz-header">
+        📘 {{ category.name }} 모의고사
+    </div>
+
+    <form method="POST" action="{% url 'quiz_submit' subcategory.id %}">
+        {% csrf_token %}
+
+        {% for q in questions %}
+        <div class="question-card">
+            <div class="question-title">
+                {{ forloop.counter }}. {{ q.question }}
+            </div>
+
+            <div class="choice-box q{{ q.id }}" onclick="selectChoice('{{ q.id }}', this)">
+                <label>
+                    <input type="radio" name="{{ q.id }}" value="1"> {{ q.choice1 }}
+                </label>
+            </div>
+
+            <div class="choice-box q{{ q.id }}" onclick="selectChoice('{{ q.id }}', this)">
+                <label>
+                    <input type="radio" name="{{ q.id }}" value="2"> {{ q.choice2 }}
+                </label>
+            </div>
+
+            <div class="choice-box q{{ q.id }}" onclick="selectChoice('{{ q.id }}', this)">
+                <label>
+                    <input type="radio" name="{{ q.id }}" value="3"> {{ q.choice3 }}
+                </label>
+            </div>
+
+            <div class="choice-box q{{ q.id }}" onclick="selectChoice('{{ q.id }}', this)">
+                <label>
+                    <input type="radio" name="{{ q.id }}" value="4"> {{ q.choice4 }}
+                </label>
+            </div>
         </div>
-    {% endfor %}
+        {% endfor %}
 
-    <button type="submit">제출</button>
-</form>
+        <button type="submit" class="submit-btn">정답 제출</button>
+    </form>
+
+</div>
 
 {% endblock %}

@@ -1,26 +1,152 @@
 {% extends "HTML/base.html" %}
 {% block content %}
 
-<h2>기프티콘 교환</h2>
+<link href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 
-<p>보유 포인트: {{ balance }}P</p>
+<style>
+    body {
+        font-family: 'Pretendard', sans-serif;
+    }
 
-{% if error %}
-<p style="color:red;">{{ error }}</p>
-{% endif %}
+    .gift-container {
+        max-width: 650px;
+        margin: 40px auto;
+        padding: 20px;
+        color: white;
+    }
 
-<ul>
-    {% for g in gifts %}
-        <li>
+    .page-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .balance-box {
+        background: #181818;
+        padding: 18px 22px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        margin-bottom: 25px;
+        font-size: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .balance-point {
+        font-size: 22px;
+        font-weight: 700;
+        color: #00e676;
+    }
+
+    /* 기프티콘 카드 */
+    .gift-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .gift-card {
+        background: #1f1f1f;
+        padding: 18px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        transition: 0.25s;
+    }
+
+    .gift-card:hover {
+        transform: translateY(-4px);
+        border-color: #555;
+    }
+
+    .gift-name {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .gift-cost {
+        font-size: 16px;
+        color: #bbb;
+        margin-bottom: 14px;
+    }
+
+    .buy-btn {
+        width: 100%;
+        padding: 10px;
+        background: black;
+        color: white;
+        border-radius: 8px;
+        border: 1px solid #444;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .buy-btn:hover {
+        background: #303030;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background: black;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 15px;
+        transition: 0.25s;
+        border: 1px solid #444;
+        margin-top: 15px;
+    }
+
+    .back-btn:hover {
+        background: #333;
+    }
+
+    .error-text {
+        color: #ff5252;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+</style>
+
+
+<div class="gift-container">
+
+    <div class="page-title">🎁 기프티콘 교환</div>
+
+    <div class="balance-box">
+        <span>보유 포인트</span>
+        <span class="balance-point">{{ balance }}P</span>
+    </div>
+
+    {% if error %}
+        <p class="error-text">⚠ {{ error }}</p>
+    {% endif %}
+
+    <div class="gift-list">
+        {% for g in gifts %}
+        <div class="gift-card">
+            <div class="gift-name">{{ g.name }}</div>
+            <div class="gift-cost">{{ g.cost }}P</div>
+
             <form method="POST" action="{% url 'gift_buy' %}">
                 {% csrf_token %}
-                <strong>{{ g.name }}</strong> ({{ g.cost }}P)
                 <input type="hidden" name="gift_name" value="{{ g.name }}">
                 <input type="hidden" name="cost" value="{{ g.cost }}">
-                <button type="submit">교환</button>
+
+                <button type="submit" class="buy-btn">교환하기</button>
             </form>
-        </li>
-    {% endfor %}
-</ul>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'point' %}" class="back-btn">← 이전 페이지로 돌아가기</a>
+
+</div>
 
 {% endblock %}
