@@ -6,13 +6,14 @@ pipeline {
         TAG = "v${env.BUILD_NUMBER}"
         DEPLOY_FILE = "k8s/deployment.yaml"
     }
-    stage('Cleanup') {
-	steps {
-        	deleteDir()
-    	}
-    }
 
     stages {
+        stage('Cleanup Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout([
@@ -54,7 +55,7 @@ pipeline {
                     git config user.name "OhseungKeun"
 
                     git checkout main
-		    git pull --rebase origin main
+		    git pull origin main
 
                     sed -i "s|image:.*|image: $IMAGE:$TAG|g" $DEPLOY_FILE
 
