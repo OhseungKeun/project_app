@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: django
-          image: sbe03011/django:v19
+          image: sbe03011/django:v20
           ports:
             - containerPort: 8000
