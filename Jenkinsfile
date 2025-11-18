@@ -41,7 +41,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PW')]) {
                     sh """
                     docker login -u sbe03011 -p $DOCKER_PW
-                    docker push $IMAGE:$TAG
+		    docker tag $IMAGE:$TAG $IMAGE:latest
+		    docker push $IMAGE:latest
                     """
                 }
             }
