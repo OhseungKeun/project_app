@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = "sbe03011/django_project"
+        IMAGE = "sbe03011/django"
         TAG = "v${env.BUILD_NUMBER}"
         DEPLOY_FILE = "k8s/deployment.yaml"
     }
@@ -41,8 +41,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PW')]) {
                     sh """
                     docker login -u sbe03011 -p $DOCKER_PW
-		    docker tag $IMAGE:$TAG $IMAGE:latest
-		    docker push $IMAGE:latest
+		    docker push $IMAGE:$TAG
                     """
                 }
             }
@@ -64,7 +63,7 @@ pipeline {
                     git commit -m "Update image to $IMAGE:$TAG" || true
 
 		    git fetch origin main
-                    git push -f https://$GIT_TOKEN@github.com/OhseungKeun/argocd.git main
+                    git push -f https://$GIT_TOKEN@github.com/OhseungKeun/project_app.git main
                     """
                 }
             }
