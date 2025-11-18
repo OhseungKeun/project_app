@@ -6,6 +6,11 @@ pipeline {
         TAG = "v${env.BUILD_NUMBER}"
         DEPLOY_FILE = "k8s/deployment.yaml"
     }
+    stage('Cleanup') {
+	steps {
+        	deleteDir()
+    	}
+    }
 
     stages {
         stage('Checkout') {
