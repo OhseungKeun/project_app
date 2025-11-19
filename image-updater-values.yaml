@@ -1,0 +1,11 @@
+config:
+  registries:
+    - name: dockerhub
+      prefix: docker.io
+      apiUrl: https://index.docker.io
+      default: true
+      credentials:
+        secretRef:
+          name: argocd-image-updater-dockerhub
+          usernameKey: username
+          passwordKey: password

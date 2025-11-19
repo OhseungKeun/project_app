@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = "sbe03011/django-app"
+        IMAGE = "sbe03011/django"
         TAG = "v${env.BUILD_NUMBER}"
+        DEPLOY_FILE = "k8s/deployment.yaml"
     }
 
     stages {
-
         stage('Cleanup Workspace') {
             steps {
                 deleteDir()
@@ -27,6 +27,7 @@ pipeline {
             }
         }
 
+
         stage('Build Docker Image') {
             steps {
                 sh """
@@ -39,17 +40,32 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PW')]) {
                     sh """
-                    echo "$DOCKER_PW" | docker login -u sbe03011 --password-stdin
-                    docker push $IMAGE:$TAG
+                    docker login -u sbe03011 -p $DOCKER_PW
+		    docker push $IMAGE:$TAG
                     """
                 }
             }
         }
 
-        stage('Finish') {
+        stage('Update Manifest') {
             steps {
-                echo "New image pushed: $IMAGE:$TAG"
-                echo "ArgoCD Image Updater will detect the new tag and deploy automatically."
+                withCredentials([string(credentialsId: 'Git-Token', variable: 'GIT_TOKEN')]) {
+                    sh """
+                    git config user.email "sbe03011@naver.com"
+                    git config user.name "OhseungKeun"
+
+                    git checkout main
+		    git pull origin main
+
+                    sed -i "s|image:.*|image: $IMAGE:$TAG|g" $DEPLOY_FILE
+
+                    git add $DEPLOY_FILE
+                    git commit -m "Update image to $IMAGE:$TAG" || true
+
+		    git fetch origin main
+                    git push -f https://$GIT_TOKEN@github.com/OhseungKeun/project_app.git main
+                    """
+                }
             }
         }
     }
