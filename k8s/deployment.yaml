@@ -14,6 +14,10 @@ spec:
     spec:
       containers:
         - name: django
+<<<<<<< HEAD
           image: sbe03011/django-app:latest
+=======
+          image: sbe03011/django:v22
+>>>>>>> 4075278dcf6d0a658c834c39f758c1611edacf61
           ports:
             - containerPort: 8000
