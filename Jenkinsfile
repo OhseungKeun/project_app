@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()   
+    }
+
     environment {
         IMAGE = "sbe03011/django-app"
         TAG = "v${env.BUILD_NUMBER}"
