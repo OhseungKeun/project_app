@@ -1,9 +1,0 @@
-resources:
-  - deployment.yaml
-  - service.yaml
-  - ingress.yaml
-
-images:
-  - name: sbe03011/django-app
-    newTag: v30
-

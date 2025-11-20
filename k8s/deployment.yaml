@@ -17,4 +17,3 @@ spec:
           image: sbe03011/django-app:v30
           ports:
             - containerPort: 8000
-
