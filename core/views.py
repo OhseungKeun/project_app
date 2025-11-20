@@ -455,3 +455,6 @@ def notice_detail(request, pk):
     notice = get_object_or_404(Notice, id=pk)
     return render(request, "HTML/notice_detail.html", {"notice": notice})
 
+
+
+
