@@ -93,6 +93,7 @@ class MainCategory(models.Model):
 class SubCategory(models.Model):
     main = models.ForeignKey(MainCategory, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    code = models.CharField(max_length=50, unique=True)  # ← 추가!
 
     class Meta:
         db_table = "quiz_sub_category"
